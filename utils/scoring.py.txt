@@ -1,0 +1,115 @@
+# utils/scoring.py
+import json
+from datetime import datetime, timedelta
+
+with open('scoring_rules.json', 'r', encoding='utf-8') as f:
+    RULES = json.load(f)
+
+# helper: convert Minguo (民國) string YYYY-MM-DD to datetime
+def minguo_to_gregorian(minguo_str):
+    if not minguo_str:
+        return None
+    try:
+        parts = minguo_str.split('-')
+        if len(parts) != 3:
+            raise ValueError("日期格式應為 YYYY-MM-DD")
+        y = int(parts[0]) + 1911
+        m = int(parts[1])
+        d = int(parts[2])
+        return datetime(y, m, d)
+    except (ValueError, TypeError, AttributeError) as e:
+        print(f"日期轉換錯誤: {minguo_str}, 錯誤: {e}")
+        return None
+
+def compute_expiry_and_notice(start_minguo):
+    start = minguo_to_gregorian(start_minguo)
+    if start is None:
+        return None 
+    expiry = start.replace(year=start.year + RULES['validity_years'])
+    notice_date = expiry - timedelta(days=RULES['renewal_notice_months'] * 30)
+    return {
+        'start': start.strftime('%Y-%m-%d'),
+        'expiry': expiry.strftime('%Y-%m-%d'),
+        'notice_date': notice_date.strftime('%Y-%m-%d')
+    }
+
+def evaluate_points(record):
+    res = {}
+    totals = RULES['totals']
+
+    qer = record.get('quality_ethics_regulation', 0)
+    qer_counted = min(qer, totals['max_quality_ethics_regulation_counted'])
+
+    mand = record.get('mandatory', {})
+    mand_results = {}
+    mand_total_counted = 0
+    mandatory_rules = RULES['mandatory_categories']
+    for k, rule in mandatory_rules.items():
+        v = mand.get(k, 0)
+        counted = min(v, rule['max_counted'])
+        mand_results[k] = {'value': v, 'counted': counted, 'min_required': rule['min']}
+        mand_total_counted += counted
+
+    im = record.get('indigenous_multicultural', {})
+    im_rules = RULES['indigenous_and_multicultural']
+    change_date = minguo_to_gregorian(im_rules['rule_change_date_minguo'])
+    
+    renewal_date_str = record.get('renewal_date')
+    renewal_dt = minguo_to_gregorian(renewal_date_str) 
+    
+    im_counted = 0
+    im_notes = ''
+    pass_indigenous_multicultural = False
+    
+    raw_ind = im.get('indigenous', 0)
+    raw_mul = im.get('multicultural', 0)
+    raw_total = raw_ind + raw_mul
+
+    if renewal_dt:
+        if renewal_dt <= change_date:
+            rule = im_rules['before']
+            im_counted = min(raw_total, rule['max_counted'])
+            pass_indigenous_multicultural = (raw_total >= rule['min_required'])
+            im_notes = f"認證更新日 {renewal_date_str}: 適用舊制 (<= {im_rules['rule_change_date_minguo']})。\n要求合計 {rule['min_required']} 點, 採計上限 {rule['max_counted']} 點。"
+        else:
+            rule = im_rules['after']
+            im_counted = raw_total 
+            pass_indigenous_multicultural = (raw_ind >= rule['min_indigenous_required'] and raw_mul >= rule['min_multicultural_required'])
+            im_notes = f"認證更新日 {renewal_date_str}: 適用新制 (> {im_rules['rule_change_date_minguo']})。\n要求原住民 {rule['min_indigenous_required']} 點、多元文化 {rule['min_multicultural_required']} 點。"
+    else:
+        im_counted = raw_total
+        pass_indigenous_multicultural = False
+        if renewal_date_str:
+             im_notes = "認證更新日格式錯誤，無法判斷新舊制規則。"
+        else:
+             im_notes = "未提供認證更新日，無法判斷新舊制規則。"
+
+    prof = record.get('professional_course', 0)
+    total_counted = prof + qer_counted + mand_total_counted + im_counted
+    
+    online = record.get('online_points', 0)
+    online_capped = min(online, totals['max_online_points'])
+    
+    physical_points = total_counted - online
+    pass_physical_min = physical_points >= (totals['min_total_points'] - totals['max_online_points']) # 120 - 40 = 80
+
+    res['breakdown'] = {
+        'professional_course': prof,
+        'quality_ethics_regulation': {'raw': qer, 'counted': qer_counted},
+        'mandatory': mand_results,
+        'indigenous_multicultural': {'raw_ind': raw_ind, 'raw_mul': raw_mul, 'counted': im_counted},
+        'online_points_total': online,
+        'online_points_capped': online_capped
+    }
+
+    res['total_counted'] = total_counted
+    res['passes'] = {
+        'total': total_counted >= totals['min_total_points'],
+        'professional_min': prof >= totals['min_professional_course'],
+        'qer_min': qer_counted >= totals['min_quality_ethics_regulation'],
+        'online_max': online <= totals['max_online_points'],
+        'physical_min': pass_physical_min,
+        'indigenous_multicultural': pass_indigenous_multicultural
+    }
+    res['notes'] = im_notes
+    return res

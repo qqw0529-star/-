@@ -1,0 +1,88 @@
+# main.py
+import os
+from flask import Flask, render_template, request, jsonify
+from utils.scoring import compute_expiry_and_notice, evaluate_points
+from linebot import LineBotApi, WebhookHandler
+from linebot.exceptions import InvalidSignatureError
+from linebot.models import MessageEvent, TextMessage, TextSendMessage
+
+app = Flask(__name__)
+
+# 從 Replit Secrets (環境變數) 讀取設定
+DEBUG_MODE = os.environ.get('DEBUG', 'False').lower() == 'true'
+PORT = int(os.environ.get('PORT', 3000))
+LINE_TOKEN = os.environ.get('LINE_CHANNEL_ACCESS_TOKEN')
+LINE_SECRET = os.environ.get('LINE_CHANNEL_SECRET')
+
+if not LINE_TOKEN or not LINE_SECRET:
+    print("警告：LINE_CHANNEL_ACCESS_TOKEN 或 LINE_CHANNEL_SECRET 未設定。")
+    if not DEBUG_MODE:
+        raise ValueError("LINE Bot 憑證未設定，無法啟動。")
+    line_bot_api = None
+    handler = None
+else:
+    line_bot_api = LineBotApi(LINE_TOKEN)
+    handler = WebhookHandler(LINE_SECRET)
+
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+@app.route('/admin')
+def admin():
+    return render_template('admin.html')
+
+@app.route('/api/compute_expiry', methods=['POST'])
+def api_compute_expiry():
+    data = request.json or {}
+    start = data.get('start_minguo')
+    if not start:
+        return jsonify({'error': '缺少生效日 (missing start_minguo)'}), 400
+    
+    result = compute_expiry_and_notice(start)
+    if result is None:
+        return jsonify({'error': '日期格式錯誤，請使用 YYY-MM-DD 格式'}), 400
+        
+    return jsonify(result)
+
+@app.route('/api/evaluate', methods=['POST'])
+def api_evaluate():
+    payload = request.json or {}
+    if not payload:
+         return jsonify({'error': '缺少評估資料 (missing payload)'}), 400
+    try:
+        result = evaluate_points(payload)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({'error': f'評估時發生內部錯誤: {e}'}), 500
+
+@app.route('/line/webhook', methods=['POST'])
+def line_webhook():
+    if handler is None:
+        return 'LINE Bot 未設定', 500
+
+    signature = request.headers['X-Line-Signature']
+    body = request.get_data(as_text=True)
+
+    try:
+        handler.handle(body, signature)
+    except InvalidSignatureError:
+        return 'Invalid signature', 400
+    
+    return 'OK', 200
+
+@handler.add(MessageEvent, message=TextMessage)
+def handle_message(event):
+    base_url = request.url_root
+    reply_text = f"您好，您輸入了： {event.message.text}\n\n"
+    reply_text += f"點此前往積分試算：\n{base_url}\n\n"
+    reply_text += f"點此查看常見問答：\n{base_url}#qa-section"
+    
+    line_bot_api.reply_message(
+        event.reply_token,
+        TextSendMessage(text=reply_text))
+
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=PORT, debug=DEBUG_MODE)

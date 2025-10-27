@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>管理後台</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header>
+    <h1>管理後台 - 長照查詢積分小幫手</h1>
+  </header>
+  <main>
+    <p>此為管理者頁面示意，實務上需加入登入驗證與權限控管。</p>
+    <section>
+      <h2>待審案件（範例）</h2>
+      <table>
+        <thead><tr><th>姓名</th><th>證照生效日</th><th>總分</th><th>狀態</th></tr></thead>
+        <tbody>
+          <tr><td>王小明</td><td>112-06-02</td><td>130</td><td>通過</td></tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+</body>
+</html>

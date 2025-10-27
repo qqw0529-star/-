@@ -1,0 +1,28 @@
+{
+  "validity_years": 6,
+  "renewal_notice_months": 6,
+  "totals": {
+    "min_total_points": 120,
+    "min_professional_course": 84,
+    "min_quality_ethics_regulation": 24,
+    "max_quality_ethics_regulation_counted": 36,
+    "max_online_points": 40
+  },
+  "mandatory_categories": {
+    "fire_safety": {"min": 1, "max_counted": 10},
+    "emergency_response": {"min": 1, "max_counted": 10},
+    "infection_control": {"min": 1, "max_counted": 10},
+    "gender_sensitivity": {"min": 1, "max_counted": 10}
+  },
+  "indigenous_and_multicultural": {
+    "rule_change_date_minguo": "112-06-02",
+    "before": {
+      "min_required": 2,
+      "max_counted": 2
+    },
+    "after": {
+      "min_indigenous_required": 6,
+      "min_multicultural_required": 6
+    }
+  }
+}

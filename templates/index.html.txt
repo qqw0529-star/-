@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-itf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>長照查詢積分小幫手</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header>
+    <img src="/static/logo.svg" alt="logo" height="60">
+    <h1>長照查詢積分小幫手 <small>Care Points Helper</small></h1>
+  </header>
+
+  <nav class="sub-nav">
+    <a href="#calculator-section" class="active">積分試算</a>
+    <a href="#qa-section">常見問答 (Q&A)</a>
+  </nav>
+
+  <main>
+    <section id="calculator-section">
+      <h2>步驟一：輸入小卡生效日（民國）</h2>
+      <div class="form-group">
+        <label for="start_minguo">生效日 (民國 YYY-MM-DD)</label>
+        <input id="start_minguo" placeholder="例如：112-06-02">
+        <button onclick="computeExpiry()">計算到期與提醒</button>
+      </div>
+      <pre id="expiry_result"></pre>
+    </section>
+
+    <section>
+      <h2>步驟二：輸入積分資料</h2>
+      <fieldset>
+        <legend>主要積分</legend>
+        <div class="form-group">
+          <label for="prof_course">專業課程 (A)</label>
+          <input type="number" id="prof_course" value="84">
+        </div>
+        <div class="form-group">
+          <label for="qer_course">品質/倫理/法規 (B)</label>
+          <input type="number" id="qer_course" value="28">
+        </div>
+        <div class="form-group">
+          <label for="online_points">線上課程總分 (C)</label>
+          <input type="number" id="online_points" value="10">
+        </div>
+      </fieldset>
+      
+      <fieldset>
+        <legend>四大必修</legend>
+        <div class="form-group">
+          <label for="mand_fire">消防安全</label>
+          <input type="number" id="mand_fire" value="1">
+        </div>
+        <div class="form-group">
+          <label for="mand_er">緊急應變</label>
+          <input type="number" id="mand_er" value="1">
+        </div>
+        <div class="form-group">
+          <label for="mand_inf">感染管制</label>
+          <input type="number" id="mand_inf" value="1">
+        </div>
+        <div class="form-group">
+          <label for="mand_gen">性別敏感度</label>
+          <input type="number" id="mand_gen" value="1">
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>原住民/多元文化 (新舊制判斷)</legend>
+        <div class="form-group">
+          <label for="im_ind">原住民積分 (總分)</label>
+          <input type="number" id="im_ind" value="6">
+        </div>
+        <div class="form-group">
+          <label for="im_mul">多元文化積分 (總分)</label>
+          <input type="number" id="im_mul" value="6">
+        </div>
+        <div class="form-group">
+          <label for="renewal_date">認證更新日期 (民國 YYY-MM-DD)</label>
+          <input type="text" id="renewal_date" value="113-06-03" placeholder="例如：113-06-03">
+          <small>用於判斷原民/多元文化積分適用新制 (112-06-02 後) 或舊制</small>
+        </div>
+      </fieldset>
+
+      <button onclick="evaluate()">送出審核</button>
+      <pre id="eval_result"></pre>
+    </section>
+
+    <div class="qa-container" id="qa-section">
+      <section>
+        <h2>積分規定 常見問答 (Q&A)</h2>
+        <p>資料來源：長期照顧服務人員訓練認證繼續教育及登錄辦法問答集 (113.2.6版) 及 積分審查教育訓練簡報 (113.8.23版)。</p>
+  
+        <details>
+          <summary>Q: 取得長照人員認證(長照小卡)前上過的課，可以算積分嗎？</summary>
+          <div class="answer">
+            <p><strong>A:</strong> 不行。</p>
+            <p>根據辦法第9條，長照人員應自「認證證明文件生效日起」，每6年接受繼續教育課程。 因此，在長照小卡生效日之前取得的課程積分，不予採認。</p>
+          </div>
+        </details>
+        
+        <details>
+          <summary>Q: Level I (長照共同訓練課程) 可以算是繼續教育積分嗎？</summary>
+          <div class="answer">
+            <p><strong>A:</strong> 不行。</p>
+            <p>Level I 屬於成為長照人員前的「資格訓練課程」。 「繼續教育積分」是指取得長照人員服務證明(長照小卡) *之後* 所上的課程。兩者目的不同，因此資格訓練課程不能算是繼續教育積分。</p>
+          </div>
+        </details>
+  
+        <details>
+          <summary>Q: 長照小卡更新需要哪些積分？必修課程有哪些？</summary>
+          <div class="answer">
+            <p><strong>A:</strong> 認證效期6年內，積分應符合以下所有條件：</p>
+            <ul>
+              <li><strong>總積分：</strong> 合計至少 <strong>120 點</strong>。</li>
+              <li><strong>課程屬性 (A+B)：</strong>
+                <ul>
+                  <li><strong>專業課程 (A)：</strong> 至少 <strong>84 點</strong>。</li>
+                  <li><strong>專業品質、專業倫理、專業法規 (B)：</strong> 這三項合計至少 <strong>24 點</strong>，且三項都*不可為 0*。 (上限為 36 點)。</li>
+                </ul>
+              </li>
+              <li><strong>四大必修 (C)：</strong>
+                <ul>
+                  <li>消防安全、緊急應變、感染管制、性別敏感度。</li>
+                  <li>這四項合計至少 <strong>10 點</strong>，且四項都*不可為 0*。</li>
+                </ul>
+              </li>
+              <li><strong>文化必修 (D)：</strong> 請參考下一題，此項有新舊制分別。</li>
+              <li><strong>實體/網路：</strong>
+                <ul>
+                  <li><strong>網路課程 (線上)：</strong> 積分採計上限為 <strong>40 點</strong>。</li>
+                  <li><strong>實體課程：</strong> 積分至少應達 <strong>80 點</strong> (總分120 - 網路40 = 實體80)。</li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+        </details>
+  
+        <details>
+          <summary>Q:「原住民族」與「多元族群」課程的積分如何計算？ (新舊制)</summary>
+          <div class="answer">
+            <p><strong>A:</strong> 這是最關鍵的規則，以您的「長照小卡有效期限」或「認證更新日」在哪個區間為準：</p>
+            <ul>
+              <li><strong>舊制 (認證有效期限在 113年6月2日 以前)：</strong><br>
+                修習「原住民族與多元族群文化敏感度及能力」課程 (原名稱「多元族群文化」)，合計至少 <strong>2 點</strong> 即可。</li>
+              <li><strong>新制 (認證有效期限在 113年6月3日 以後)：</strong><br>
+                必須*每年*修習「原住民族文化敏感度及能力」課程至少 <strong>1 點</strong>，*並且*「多元族群文化敏感度及能力」課程至少 <strong>1 點</strong>。 (6年合計12點)。</li>
+            </ul>
+            <p><strong>關鍵：</strong> 判斷新舊制的日期，是以您「長照小卡上記載的有效期限」為主，*不是*看您送出申請的日期。</p>
+          </div>
+        </details>
+  
+        <details>
+          <summary>Q: (新制) 如果我第一年就把文化積分 12 點都上完了，之後可以不用上了嗎？</summary>
+          <div class="answer">
+            <p><strong>A:</strong> 不行。 法規規定是「每年各1點為原則」。 即使前一年度已取得超過 1 點，按法令規定，下年度該課程仍應再學習。 這是為了確保文化敏感度是持續累積內化的。</p>
+          </div>
+        </details>
+  
+        <details>
+          <summary>Q: (新制) 如果我有 1 年忘了上文化積分，怎麼辦？</summary>
+          <div class="answer">
+            <p><strong>A:</strong> 將無法在有效期限前完成更新。 您必須採用「逾有效期限申請更新」的方式辦理。 屆時，會以您 "提出申請日" 往前推算 6 年內，是否滿足所有積分規定 (含總分 120 點、所有必修項目) 來審核。</p>
+          </div>
+        </details>
+  
+        <details>
+          <summary>Q: 我的長照小卡過期了才申請更新，積分和效期如何計算？</summary>
+          <div class="answer">
+            <p><strong>A:</strong> 仍可更新，但規則不同：</p>
+            <ul>
+              <li><strong>積分計算：</strong> 以您 "提出申請更新日" 往前推算 6 年內，必須完成 120 點積分 (且符合所有必修規定)。</li>
+              <li><strong>新效期計算：</strong> 新的長照小卡效期，是從 "申請更新且審核通過" 的日期開始往後計算 6 年。</li>
+              <li><strong>積分歸零：</strong> 積分會從新的生效日起重新歸零起算。</li>
+            </ul>
+          </div>
+        </details>
+        
+        <details>
+          <summary>Q:「直播」或「視訊」課程，算是「實體」還是「網路」積分？</summary>
+          <div class="answer">
+            <p><strong>A:</strong> 視為「實體課程」。</p>
+            <p>自 112年10月13日 起，課程以線上同步方式 (例如直播、視訊) 辦理者，視為「實體課程」積分。</p>
+            <p>(網路課程是指那些 "事前預錄好"，可隨時上網學習的課程)。</p>
+          </div>
+        </details>
+        
+        <details>
+          <summary>Q: 我同時有「照服員」和「居服督導」兩張長照小卡，積分可以共用嗎？</summary>
+          <div class="answer">
+            <p><strong>A:</strong> 可以，但有條件。</p>
+            <p>如果繼續教育積分的「完成時間」，同時落在每張認證證明文件的「有效期間」之內，該積分可在各張認證證明文件上均被計算。</p>
+            <p><strong>注意：</strong> 雖然積分可共用，但更新時，您只能「擇一」*實際有在提供服務*的證明文件申請更新。</p>
+          </div>
+        </details>
+  
+      </section>
+    </div>
+    </main>
+
+  <script>
+    function getNum(id) {
+      const val = parseInt(document.getElementById(id).value, 10);
+      return isNaN(val) ? 0 : val;
+    }
+
+    async function computeExpiry(){
+      const start = document.getElementById('start_minguo').value;
+      const resEl = document.getElementById('expiry_result');
+      try {
+        const res = await fetch('/api/compute_expiry', {
+          method:'POST',
+          headers:{'Content-Type':'application/json'}, 
+          body: JSON.stringify({start_minguo: start})
+        });
+        const data = await res.json();
+        if(res.ok) {
+          resEl.innerText = JSON.stringify(data, null, 2);
+        } else {
+          resEl.innerText = `錯誤: ${data.error}`;
+        }
+      } catch (e) {
+        resEl.innerText = `連線錯誤: ${e.message}`;
+      }
+    }
+
+    async function evaluate(){
+      const resEl = document.getElementById('eval_result');
+      
+      const payload = {
+        professional_course: getNum('prof_course'),
+        quality_ethics_regulation: getNum('qer_course'),
+        mandatory: {
+          fire_safety: getNum('mand_fire'),
+          emergency_response: getNum('mand_er'),
+          infection_control: getNum('mand_inf'),
+          gender_sensitivity: getNum('mand_gen')
+        },
+        indigenous_multicultural: {
+          indigenous: getNum('im_ind'),
+          multicultural: getNum('im_mul')
+        },
+        online_points: getNum('online_points'),
+        renewal_date: document.getElementById('renewal_date').value || null
+      };
+
+      try {
+        const res = await fetch('/api/evaluate', {
+          method:'POST',
+          headers:{'Content-Type':'application/json'}, 
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if(res.ok) {
+          resEl.innerText = JSON.stringify(data, null, 2);
+        } else {
+          resEl.innerText = `錯誤: ${data.error}`;
+        }
+      } catch (e) {
+        resEl.innerText = `連線錯誤: ${e.message}`;
+      }
+    }
+    
+    document.addEventListener('DOMContentLoaded', () => {
+      const navLinks = document.querySelectorAll('.sub-nav a');
+      navLinks.forEach(link => {
+        link.addEventListener('click', () => {
+          navLinks.forEach(nav => nav.classList.remove('active'));
+          link.classList.add('active');
+        });
+      });
+    });
+  </script>
+</body>
+</html>
