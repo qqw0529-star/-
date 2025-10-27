@@ -3,7 +3,7 @@ html { scroll-behavior: smooth; }
 body { font-family: 'Noto Sans', 'Noto Sans TC', Arial, sans-serif; padding: 20px; color: #333; background-color: #f8f9fa; line-height: 1.6; }
 header { display: flex; align-items: center; gap: 16px; border-bottom: 2px solid #3BAA8A; padding-bottom: 10px; margin-bottom: 0; background-color: #fff; padding: 15px 20px; border-radius: 8px 8px 0 0; }
 header img { border-radius: 8px; }
-h1 { margin: 0; font-size: 1.5em;} /* Adjusted H1 size */
+h1 { margin: 0; font-size: 1.5em;}
 h1 small { display: block; font-size: 0.7em; color: #666; margin-top: 4px; }
 main { max-width: 800px; margin: 0 auto 20px auto; }
 section { background: #fff; border: 1px solid #e0e0e0; border-radius: 8px; padding: 25px; margin-bottom: 25px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
@@ -11,66 +11,51 @@ h2 { color: #3BAA8A; margin-top: 0; margin-bottom: 20px; border-bottom: 1px soli
 h4 { color: #555; margin-top: 15px; margin-bottom: 5px; font-size: 1.05em; }
 h4 small { font-weight: normal; color: #777; font-size: 0.9em; }
 
-/* (★ 新增) Disclaimer 和 回報連結 樣式 */
+/* (★ 已修改) Disclaimer 和 回報連結 樣式 */
 .disclaimer-notice {
-    background-color: #fff1f1; /* Light red background */
-    color: #dc3545; /* Red text */
-    border: 1px solid #f5c6cb; /* Red border */
-    padding: 15px 20px;
-    margin: 0 auto 15px auto; /* Centered below header */
-    max-width: 840px; /* Match main + padding */
-    border-radius: 0 0 8px 8px; /* Rounded bottom corners */
-    font-size: 1.1em; /* Larger font */
+    background-color: #fff1f1;
+    color: #dc3545;
+    border: 1px solid #f5c6cb;
+    padding: 10px 20px; /* Reduced padding */
+    margin: 0 auto 15px auto;
+    max-width: 840px;
+    border-radius: 0 0 8px 8px;
+    font-size: 1.05em; /* Slightly smaller */
     font-weight: bold;
     text-align: center;
-    position: relative; /* Needed for positioning the report link */
+}
+/* (★ 新增) 使內部 P 標籤分行 */
+.disclaimer-notice p {
+    margin: 5px 0; /* Add spacing between lines */
 }
 .report-link {
-    color: #dc3545; /* Red */
+    color: #dc3545;
     font-weight: bold;
     text-decoration: underline;
-    margin-left: 15px;
-    font-size: 0.9em; /* Slightly smaller */
+    /* margin-left: 15px; */ /* Removed margin for centering */
+    font-size: 1em; /* Match surrounding text */
     cursor: pointer;
 }
-.report-link:hover {
-    color: #a71d2a; /* Darker red on hover */
-}
-
+.report-link:hover { color: #a71d2a; }
 
 /* 導覽列 */
-nav.sub-nav {
-  background: #f4f6f8;
-  padding: 10px 0;
-  border-radius: 8px; /* Rounded corners */
-  margin: 0 auto 20px auto; /* Below disclaimer */
-  max-width: 840px;
-  text-align: center;
-  position: sticky;
-  top: 10px; /* Stick below potential top margin */
-  z-index: 10;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
+nav.sub-nav { background: #f4f6f8; padding: 10px 0; border-radius: 8px; margin: 0 auto 20px auto; max-width: 840px; text-align: center; position: sticky; top: 10px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
 nav.sub-nav a { display: inline-block; padding: 5px 15px; text-decoration: none; color: #3BAA8A; font-weight: bold; border-radius: 5px; }
 nav.sub-nav a:hover, nav.sub-nav a:focus, nav.sub-nav a.active { background-color: #e0e8e5; outline: none; }
 
-/* 錨點跳轉偏移 (配合 sticky nav) */
-#calculator-section, #qa-section, #links-section { scroll-margin-top: 80px; /* Increased offset */ }
-
+/* 錨點跳轉偏移 */
+#calculator-section, #qa-section, #links-section { scroll-margin-top: 80px; }
 
 /* 表單樣式 */
 .input-group { margin-bottom: 20px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .input-group label { font-weight: bold; color: #444; min-width: 220px; text-align: right;}
 .input-group input[type="text"] { flex-grow: 1; padding: 8px 10px; border: 1px solid #ccc; border-radius: 4px; min-width: 150px; }
-
 fieldset { border: 1px solid #d0d0d0; border-radius: 8px; padding: 20px; margin-bottom: 20px; background-color: #fdfdfd; }
 legend { font-weight: bold; color: #3BAA8A; padding: 0 10px; font-size: 1.1em; }
-
 .input-item { display: grid; grid-template-columns: 200px 1fr; gap: 10px; align-items: center; margin-bottom: 12px; }
 .input-item label { font-weight: 500; color: #444; text-align: right; }
 .input-item input[type="number"], .input-item input[type="text"] { width: 100%; max-width: 150px; padding: 8px 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
 .input-item small { grid-column: 2 / 3; font-size: 0.85em; color: #777; margin-top: -8px; }
-
 .yearly-input-group { border-top: 1px dashed #eee; padding-top: 15px; margin-top: 15px; }
 .yearly-input-group:first-of-type { border-top: none; margin-top: 0; padding-top: 0; }
 .yearly-item input[type="number"] { max-width: 80px; }
@@ -84,9 +69,8 @@ button:hover { background: #2f8c70; }
 .date-info { margin-top: 10px; background: #e9f5f2; padding: 15px; border-radius: 4px; border-left: 4px solid #3BAA8A; font-size: 0.95em; color: #333; }
 .date-info p { margin: 8px 0; }
 .date-info hr { border: 0; border-top: 1px dashed #ccc; margin: 10px 0; }
-.date-info strong { color: #d9534f; } /* Red for emphasis */
+.date-info strong { color: #d9534f; }
 .date-info small { font-size: 0.9em; color: #555; }
-
 
 /* 結果顯示 */
 #result-section { border-top: 3px solid #3BAA8A; }
@@ -114,6 +98,6 @@ button:hover { background: #2f8c70; }
 #links-section a:hover { text-decoration: underline; }
 #links-section p { margin-top: 15px; }
 #links-section strong { font-weight: bold; }
-#links-section small { color: #6c757d; display: block; margin-top: 15px; }
+/* #links-section small { color: #6c757d; display: block; margin-top: 15px; } */ /* Commented out as disclaimer moved */
 
 pre { background: #f4f6f8; padding: 12px; border-radius: 8px; border: 1px solid #ddd; overflow-x: auto; white-space: pre-wrap; word-wrap: break-word; font-size: 0.9em; margin-top: 20px; }
