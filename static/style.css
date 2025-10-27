@@ -13,10 +13,10 @@ h4 small { font-weight: normal; color: #777; font-size: 0.9em; }
 
 /* Disclaimer 和 回報連結 樣式 */
 .disclaimer-notice { background-color: #fff1f1; color: #dc3545; border: 1px solid #f5c6cb; padding: 10px 20px; margin: 15px auto 15px auto; max-width: 840px; border-radius: 8px; font-size: 1.05em; font-weight: bold; text-align: center; }
-/* (★ 已修改) 使 P 標籤更靠近 */
-.disclaimer-notice p { margin: 2px 0; }
+.disclaimer-notice p { margin: 3px 0; }
 .report-link { color: #dc3545; font-weight: bold; text-decoration: underline; font-size: 0.9em; cursor: pointer; }
 .report-link:hover { color: #a71d2a; }
+
 
 /* 導覽列 */
 nav.sub-nav { background: #f4f6f8; padding: 10px 0; border-radius: 8px; margin: 0 auto 20px auto; max-width: 840px; text-align: center; position: sticky; top: 10px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
