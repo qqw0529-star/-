@@ -11,35 +11,17 @@ h2 { color: #3BAA8A; margin-top: 0; margin-bottom: 20px; border-bottom: 1px soli
 h4 { color: #555; margin-top: 15px; margin-bottom: 5px; font-size: 1.05em; }
 h4 small { font-weight: normal; color: #777; font-size: 0.9em; }
 
-/* (★ 已修改) Disclaimer 和 回報連結 樣式 - 分行 */
-.disclaimer-notice {
-    background-color: #fff1f1;
-    color: #dc3545;
-    border: 1px solid #f5c6cb;
-    padding: 10px 20px;
-    margin: 15px auto 15px auto; /* Add margin top/bottom */
-    max-width: 840px;
-    border-radius: 8px; /* Rounded corners */
-    font-size: 1.05em;
-    font-weight: bold;
-    text-align: center;
-}
-.disclaimer-notice p {
-    margin: 5px 0; /* Spacing between lines */
-}
-.report-link {
-    color: #dc3545;
-    font-weight: bold;
-    text-decoration: underline;
-    font-size: 1em; /* Match surrounding text */
-    cursor: pointer;
-}
+/* Disclaimer 和 回報連結 樣式 */
+.disclaimer-notice { background-color: #fff1f1; color: #dc3545; border: 1px solid #f5c6cb; padding: 10px 20px; margin: 15px auto 15px auto; max-width: 840px; border-radius: 8px; font-size: 1.05em; font-weight: bold; text-align: center; }
+/* (★ 已修改) 使 P 標籤更靠近 */
+.disclaimer-notice p { margin: 2px 0; }
+.report-link { color: #dc3545; font-weight: bold; text-decoration: underline; font-size: 0.9em; cursor: pointer; }
 .report-link:hover { color: #a71d2a; }
-
 
 /* 導覽列 */
 nav.sub-nav { background: #f4f6f8; padding: 10px 0; border-radius: 8px; margin: 0 auto 20px auto; max-width: 840px; text-align: center; position: sticky; top: 10px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-nav.sub-nav a { display: inline-block; padding: 5px 15px; text-decoration: none; color: #3BAA8A; font-weight: bold; border-radius: 5px; }
+/* (★ 已修改) 導覽列字體大小 */
+nav.sub-nav a { display: inline-block; padding: 5px 15px; text-decoration: none; color: #3BAA8A; font-weight: bold; border-radius: 5px; font-size: 1.84em; /* Applied font size */ }
 nav.sub-nav a:hover, nav.sub-nav a:focus, nav.sub-nav a.active { background-color: #e0e8e5; outline: none; }
 
 /* 錨點跳轉偏移 */
