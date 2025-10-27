@@ -27,7 +27,8 @@
             <label for="start_minguo">小卡生效日期（民國 YYY-MM-DD）：</label>
             <input type="text" id="start_minguo" placeholder="例如：112-06-02">
             <button onclick="calculateDates()">計算效期</button>
-            <div id="date-display" class="date-info"></div>
+            <div id="date-display" class="date-info">
+                </div>
           </div>
 
           <fieldset>
@@ -226,7 +227,7 @@
     // --- Helper Functions ---
     function getNum(id) {
       const el = document.getElementById(id);
-      if (!el) { console.warn(`Element with ID ${id} not found.`); return 0; } // Warn if element missing
+      if (!el) { console.warn(`Element with ID ${id} not found.`); return 0; }
       const val = parseFloat(el.value);
       return isNaN(val) ? 0 : val;
     }
@@ -240,14 +241,9 @@
             const day = parseInt(parts[2], 10);
             if (month < 1 || month > 12 || day < 1 || day > 31) return null;
             const date = new Date(year, month - 1, day);
-             if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) {
-                return null;
-            }
+             if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) { return null; }
             return date;
-        } catch (e) {
-            console.error("Date conversion error:", e);
-            return null;
-        }
+        } catch (e) { console.error("Date conversion error:", e); return null; }
     }
 
     function gregorianToMinguo(date) {
@@ -302,9 +298,13 @@
         const expiryDateFormatted = gregorianToMinguo(expiryDateMinusOneDay);
         const renewalStartFormatted = gregorianToMinguo(renewalStartDate);
 
+        // (★ 更新顯示內容)
         displayDiv.innerHTML = `
             <p>📅 有效期限：${startDateFormatted} ~ ${expiryDateFormatted}</p>
             <p>📌 可換證日：${renewalStartFormatted} 起</p>
+            <hr>
+            <p><strong>溫馨提示：</strong>因政府作業需工作天，建議於<strong>可換證日後儘早換證</strong>，避免逾期影響資格。</p>
+            <p><small><strong>法規提醒：</strong>依《長照服務法》第58條，證照逾期未更新仍提供服務，可處 NT$3,000 ~ NT$15,000 罰鍰。(若逾期後未提供服務則無影響)</small></p>
         `;
 
         yearlyInputsDiv.innerHTML = '';
@@ -327,110 +327,40 @@
         }
     }
 
-    // (★ 已修改函數名稱)
     async function submitEvaluation() {
         console.log("submitEvaluation function called."); // Debug log
-
         const startDate = minguoToGregorian(document.getElementById('start_minguo').value);
-         if (!startDate || validityPeriods.length !== 6) {
-             alert("請先輸入有效的小卡生效日期並點擊「計算效期」。");
-             console.error("Evaluation aborted: Start date invalid or validity periods not calculated.");
-             return;
-         }
-
+         if (!startDate || validityPeriods.length !== 6) { alert("請先輸入有效的小卡生效日期並點擊「計算效期」。"); console.error("Evaluation aborted: Start date invalid or validity periods not calculated."); return; }
          let yearlyCulturalPoints = [];
-         try {
-             yearlyCulturalPoints = validityPeriods.map(period => {
-                  const indId = `year_${period.year}_ind`;
-                  const mulId = `year_${period.year}_mul`;
-                  return { year: period.year, indigenous: getNum(indId), multicultural: getNum(mulId) };
-             });
-         } catch (e) {
-             console.error("Error collecting yearly cultural points:", e);
-             alert("讀取年度文化積分時發生錯誤，請檢查輸入欄位。");
-             return;
-         }
-
-        const payload = {
-          professional_course: getNum('prof_course'),
-          quality_ethics_regulation: getNum('qer_quality') + getNum('qer_ethics') + getNum('qer_regulation'),
-          quality_points_raw: getNum('qer_quality'),
-          ethics_points_raw: getNum('qer_ethics'),
-          regulation_points_raw: getNum('qer_regulation'),
-          mandatory: { fire_safety: getNum('mand_fire'), emergency_response: getNum('mand_er'), infection_control: getNum('mand_inf'), gender_sensitivity: getNum('mand_gen') },
-           pre_change_cultural_points: getNum('pre_change_cultural'),
-           yearly_cultural_points: yearlyCulturalPoints,
-           renewal_date: gregorianToMinguo(subtractDays(addYears(startDate, 6), 1)),
-           online_points: getNum('online_points')
-        };
-        payload.fire_safety_raw = payload.mandatory.fire_safety;
-        payload.emergency_response_raw = payload.mandatory.emergency_response;
-        payload.infection_control_raw = payload.mandatory.infection_control;
-        payload.gender_sensitivity_raw = payload.mandatory.gender_sensitivity;
-
+         try { yearlyCulturalPoints = validityPeriods.map(period => { const indId = `year_${period.year}_ind`; const mulId = `year_${period.year}_mul`; return { year: period.year, indigenous: getNum(indId), multicultural: getNum(mulId) }; }); } catch (e) { console.error("Error collecting yearly cultural points:", e); alert("讀取年度文化積分時發生錯誤，請檢查輸入欄位。"); return; }
+        const payload = { professional_course: getNum('prof_course'), quality_ethics_regulation: getNum('qer_quality') + getNum('qer_ethics') + getNum('qer_regulation'), quality_points_raw: getNum('qer_quality'), ethics_points_raw: getNum('qer_ethics'), regulation_points_raw: getNum('qer_regulation'), mandatory: { fire_safety: getNum('mand_fire'), emergency_response: getNum('mand_er'), infection_control: getNum('mand_inf'), gender_sensitivity: getNum('mand_gen') }, pre_change_cultural_points: getNum('pre_change_cultural'), yearly_cultural_points: yearlyCulturalPoints, renewal_date: gregorianToMinguo(subtractDays(addYears(startDate, 6), 1)), online_points: getNum('online_points') };
+        payload.fire_safety_raw = payload.mandatory.fire_safety; payload.emergency_response_raw = payload.mandatory.emergency_response; payload.infection_control_raw = payload.mandatory.infection_control; payload.gender_sensitivity_raw = payload.mandatory.gender_sensitivity;
         console.log("Payload to be sent:", JSON.stringify(payload, null, 2));
-
-        const resultSection = document.getElementById('result-section');
-        const resultDetailsDiv = document.getElementById('result-details');
-        const rawResultPre = document.getElementById('raw-result');
-        resultDetailsDiv.innerHTML = '<p>計算中...</p>';
-        resultSection.style.display = 'block';
-
+        const resultSection = document.getElementById('result-section'); const resultDetailsDiv = document.getElementById('result-details'); const rawResultPre = document.getElementById('raw-result'); resultDetailsDiv.innerHTML = '<p>計算中...</p>'; resultSection.style.display = 'block';
         try {
             const res = await fetch('/api/evaluate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-            console.log("API Response Status:", res.status);
-            const data = await res.json();
-            console.log("Data received from API:", data);
-            rawResultPre.textContent = JSON.stringify(data, null, 2);
-
-            if (res.ok) {
-                console.log("Calling displayResults...");
-                displayResults(payload, data);
-            } else {
-                console.error("API Error:", data.error);
-                resultDetailsDiv.innerHTML = `<p style="color: red;">審查失敗: ${data.error || '未知錯誤'}</p>`;
-            }
-        } catch (e) {
-            console.error("Fetch Error:", e);
-            resultDetailsDiv.innerHTML = `<p style="color: red;">連線或處理錯誤: ${e.message}</p>`;
-            resultSection.style.display = 'block';
-        }
+            console.log("API Response Status:", res.status); const data = await res.json(); console.log("Data received from API:", data); rawResultPre.textContent = JSON.stringify(data, null, 2);
+            if (res.ok) { console.log("Calling displayResults..."); displayResults(payload, data); } else { console.error("API Error:", data.error); resultDetailsDiv.innerHTML = `<p style="color: red;">審查失敗: ${data.error || '未知錯誤'}</p>`; }
+        } catch (e) { console.error("Fetch Error:", e); resultDetailsDiv.innerHTML = `<p style="color: red;">連線或處理錯誤: ${e.message}</p>`; resultSection.style.display = 'block'; }
     }
 
     // --- Display Function ---
     function displayResults(inputs, results) {
-         console.log("Displaying results. Inputs:", inputs, "Results:", results);
-         const detailsDiv = document.getElementById('result-details');
-         if (!detailsDiv) { console.error("Result details div not found!"); return; }
-         let html = '<ol>';
-         if (!results || !results.passes || !results.breakdown) {
-            console.error("Invalid results structure received from backend:", results);
-             detailsDiv.innerHTML = '<p style="color: red;">收到無效的回應資料，無法顯示結果。</p>';
-             return;
-         }
-         const rules = { min_total_points: 120, min_professional_course: 84, min_qer_total: 24, max_qer_total: 36, min_mandatory_total: 10, min_fire: 1, min_er: 1, min_inf: 1, min_gen: 1, cultural_change_date: RULE_CHANGE_DATE_MINGUO, cultural_before_min: 2, cultural_before_max: 2, cultural_after_yearly_min: 1, cultural_after_total_min: 12, max_online_points: 40, min_physical_points: 80 };
-
+         console.log("Displaying results. Inputs:", inputs, "Results:", results); const detailsDiv = document.getElementById('result-details'); if (!detailsDiv) { console.error("Result details div not found!"); return; } let html = '<ol>'; if (!results || !results.passes || !results.breakdown) { console.error("Invalid results structure received from backend:", results); detailsDiv.innerHTML = '<p style="color: red;">收到無效的回應資料，無法顯示結果。</p>'; return; } const rules = { min_total_points: 120, min_professional_course: 84, min_qer_total: 24, max_qer_total: 36, min_mandatory_total: 10, min_fire: 1, min_er: 1, min_inf: 1, min_gen: 1, cultural_change_date: RULE_CHANGE_DATE_MINGUO, cultural_before_min: 2, cultural_before_max: 2, cultural_after_yearly_min: 1, cultural_after_total_min: 12, max_online_points: 40, min_physical_points: 80 };
          // 1. Professional Course
-         const profPoints = inputs.professional_course; const profPass = results.passes.professional_min;
-         html += `<li>專業課程積分：${profPoints.toFixed(1)} ${profPass ? '✅' : '❌'}`; if (!profPass) { html += `<br><span class="error-reason">【缺少積分】需達到 ${rules.min_professional_course} 分，您目前缺少 ${(rules.min_professional_course - profPoints).toFixed(1)} 分。</span>`; } html += `</li>`;
+         const profPoints = inputs.professional_course; const profPass = results.passes.professional_min; html += `<li>專業課程積分：${profPoints.toFixed(1)} ${profPass ? '✅' : '❌'}`; if (!profPass) { html += `<br><span class="error-reason">【缺少積分】需達到 ${rules.min_professional_course} 分，您目前缺少 ${(rules.min_professional_course - profPoints).toFixed(1)} 分。</span>`; } html += `</li>`;
          // 3. QER
-         const qerRawTotal = inputs.quality_points_raw + inputs.ethics_points_raw + inputs.regulation_points_raw; const qerCounted = results.breakdown.quality_ethics_regulation.counted; const qerPassMin = results.passes.qer_min; const qerPassEachNonZero = results.passes.qer_each_non_zero; const qerPass = qerPassMin && qerPassEachNonZero;
-         html += `<li>品質/倫理/法規積分：${qerRawTotal.toFixed(1)}（計入 ${qerCounted.toFixed(1)}，上限 ${rules.max_qer_total}） ${qerPass ? '✅' : '❌'}`; if (!qerPassMin) { html += `<br><span class="error-reason">【缺少積分】合計需達到 ${rules.min_qer_total} 分，您目前缺少 ${(rules.min_qer_total - qerCounted).toFixed(1)} 分。</span>`; } if (!qerPassEachNonZero) { let missingCats = []; if (inputs.quality_points_raw <= 0) missingCats.push("品質"); if (inputs.ethics_points_raw <= 0) missingCats.push("倫理"); if (inputs.regulation_points_raw <= 0) missingCats.push("法規"); html += `<br><span class="error-reason">【缺少類別】${missingCats.join('、')} 不可為 0 分。</span>`; } html += `</li>`;
+         const qerRawTotal = inputs.quality_points_raw + inputs.ethics_points_raw + inputs.regulation_points_raw; const qerCounted = results.breakdown.quality_ethics_regulation.counted; const qerPassMin = results.passes.qer_min; const qerPassEachNonZero = results.passes.qer_each_non_zero; const qerPass = qerPassMin && qerPassEachNonZero; html += `<li>品質/倫理/法規積分：${qerRawTotal.toFixed(1)}（計入 ${qerCounted.toFixed(1)}，上限 ${rules.max_qer_total}） ${qerPass ? '✅' : '❌'}`; if (!qerPassMin) { html += `<br><span class="error-reason">【缺少積分】合計需達到 ${rules.min_qer_total} 分，您目前缺少 ${(rules.min_qer_total - qerCounted).toFixed(1)} 分。</span>`; } if (!qerPassEachNonZero) { let missingCats = []; if (inputs.quality_points_raw <= 0) missingCats.push("品質"); if (inputs.ethics_points_raw <= 0) missingCats.push("倫理"); if (inputs.regulation_points_raw <= 0) missingCats.push("法規"); html += `<br><span class="error-reason">【缺少類別】${missingCats.join('、')} 不可為 0 分。</span>`; } html += `</li>`;
          // 4, 5, 6, 7. Mandatory Courses
-         const mandatoryItems = [ { id: 'fire', name: '消防安全', key: 'fire_safety', min: rules.min_fire, passKey: 'mandatory_fire' }, { id: 'er', name: '緊急應變', key: 'emergency_response', min: rules.min_er, passKey: 'mandatory_er' }, { id: 'inf', name: '感染管制', key: 'infection_control', min: rules.min_inf, passKey: 'mandatory_inf' }, { id: 'gen', name: '性別敏感度', key: 'gender_sensitivity', min: rules.min_gen, passKey: 'mandatory_gen' } ]; let mandatoryTotalRaw = results.breakdown.mandatory_total_raw; let mandatoryPassEach = results.passes.mandatory_each_min;
-         mandatoryItems.forEach((item) => { const breakdownItem = results.breakdown.mandatory ? results.breakdown.mandatory[item.key] : null; const rawPoints = breakdownItem ? breakdownItem.value : 0; const pass = results.passes[item.passKey]; html += `<li>${item.name}：${rawPoints.toFixed(1)} ${pass ? '✅' : '❌'}`; if (!pass) { html += `<br><span class="error-reason">【缺少積分】需達到 ${item.min} 分，您目前缺少 ${(item.min - rawPoints).toFixed(1)} 分。</span>`; } html += `</li>`; }); const mandatoryTotalPass = results.passes.mandatory_total; if (!mandatoryTotalPass) { html += `<li class="error-reason sub-item">四大必修合計：${mandatoryTotalRaw.toFixed(1)} ❌<br>【缺少積分】需合計達到 ${rules.min_mandatory_total} 分，您目前缺少 ${(rules.min_mandatory_total - mandatoryTotalRaw).toFixed(1)} 分。</li>`; } if (!mandatoryPassEach) { html += `<li class="error-reason sub-item">四大必修項目 ❌<br>【缺少類別】上述標示 ❌ 的項目未達最低 1 分要求。</li>`; }
+         const mandatoryItems = [ { id: 'fire', name: '消防安全', key: 'fire_safety', min: rules.min_fire, passKey: 'mandatory_fire' }, { id: 'er', name: '緊急應變', key: 'emergency_response', min: rules.min_er, passKey: 'mandatory_er' }, { id: 'inf', name: '感染管制', key: 'infection_control', min: rules.min_inf, passKey: 'mandatory_inf' }, { id: 'gen', name: '性別敏感度', key: 'gender_sensitivity', min: rules.min_gen, passKey: 'mandatory_gen' } ]; let mandatoryTotalRaw = results.breakdown.mandatory_total_raw; let mandatoryPassEach = results.passes.mandatory_each_min; mandatoryItems.forEach((item) => { const breakdownItem = results.breakdown.mandatory ? results.breakdown.mandatory[item.key] : null; const rawPoints = breakdownItem ? breakdownItem.value : 0; const pass = results.passes[item.passKey]; html += `<li>${item.name}：${rawPoints.toFixed(1)} ${pass ? '✅' : '❌'}`; if (!pass) { html += `<br><span class="error-reason">【缺少積分】需達到 ${item.min} 分，您目前缺少 ${(item.min - rawPoints).toFixed(1)} 分。</span>`; } html += `</li>`; }); const mandatoryTotalPass = results.passes.mandatory_total; if (!mandatoryTotalPass) { html += `<li class="error-reason sub-item">四大必修合計：${mandatoryTotalRaw.toFixed(1)} ❌<br>【缺少積分】需合計達到 ${rules.min_mandatory_total} 分，您目前缺少 ${(rules.min_mandatory_total - mandatoryTotalRaw).toFixed(1)} 分。</li>`; } if (!mandatoryPassEach) { html += `<li class="error-reason sub-item">四大必修項目 ❌<br>【缺少類別】上述標示 ❌ 的項目未達最低 1 分要求。</li>`; }
          // 8. Cultural Points
-         const culturalBreakdown = results.breakdown.indigenous_multicultural; const preChangeRaw = culturalBreakdown.pre_change_raw; const yearlyTotalRaw = culturalBreakdown.yearly_total_raw; const totalCulturalCounted = culturalBreakdown.counted; const culturalPass = results.passes.indigenous_multicultural;
-         html += `<li>多元文化積分：前=${preChangeRaw.toFixed(1)} + 後=${yearlyTotalRaw.toFixed(1)}（總計 ${totalCulturalCounted.toFixed(1)}） ${culturalPass ? '✅' : '❌'}`; if (!culturalPass) { const totalRequiredCultural = results.notes.includes("新制") ? rules.cultural_after_total_min : rules.cultural_before_min; const culturalDeficit = Math.max(0, totalRequiredCultural - totalCulturalCounted); if (culturalDeficit > 0 || !results.notes.includes("舊制")) { html += `<br><span class="error-reason">【缺少積分】需達到 ${totalRequiredCultural} 分，您目前缺少 ${culturalDeficit.toFixed(1)} 分。</span>`; if (results.notes.includes("新制")) { html += `<br><span class="error-reason"> (新制需每年各 1 分)</span>`; } } else if (results.notes.includes("新制")) { html += `<br><span class="error-reason">【未達標】新制需每年各 1 分，請檢查各年度積分。</span>`; } else if (!results.notes.includes("新制") && !results.notes.includes("舊制")) { html += `<br><span class="error-reason">【錯誤】${results.notes}</span>`; } } html += `</li>`;
+         const culturalBreakdown = results.breakdown.indigenous_multicultural; const preChangeRaw = culturalBreakdown.pre_change_raw; const yearlyTotalRaw = culturalBreakdown.yearly_total_raw; const totalCulturalCounted = culturalBreakdown.counted; const culturalPass = results.passes.indigenous_multicultural; html += `<li>多元文化積分：前=${preChangeRaw.toFixed(1)} + 後=${yearlyTotalRaw.toFixed(1)}（總計 ${totalCulturalCounted.toFixed(1)}） ${culturalPass ? '✅' : '❌'}`; if (!culturalPass) { const totalRequiredCultural = results.notes.includes("新制") ? rules.cultural_after_total_min : rules.cultural_before_min; const culturalDeficit = Math.max(0, totalRequiredCultural - totalCulturalCounted); if (culturalDeficit > 0 || !results.notes.includes("舊制")) { html += `<br><span class="error-reason">【缺少積分】需達到 ${totalRequiredCultural} 分，您目前缺少 ${culturalDeficit.toFixed(1)} 分。</span>`; if (results.notes.includes("新制")) { html += `<br><span class="error-reason"> (新制需每年各 1 分)</span>`; } } else if (results.notes.includes("新制")) { html += `<br><span class="error-reason">【未達標】新制需每年各 1 分，請檢查各年度積分。</span>`; } else if (!results.notes.includes("新制") && !results.notes.includes("舊制")) { html += `<br><span class="error-reason">【錯誤】${results.notes}</span>`; } } html += `</li>`;
          // 9. Online Points
-         const onlinePoints = results.breakdown.online_points_raw; const onlineCounted = results.breakdown.online_points_capped; const onlinePass = results.passes.online_max;
-         html += `<li>網路積分：${onlinePoints.toFixed(1)}（計入 ${onlineCounted.toFixed(1)}，上限 ${rules.max_online_points}） ${onlinePass ? '✅' : ''}`; html += `</li>`;
+         const onlinePoints = results.breakdown.online_points_raw; const onlineCounted = results.breakdown.online_points_capped; const onlinePass = results.passes.online_max; html += `<li>網路積分：${onlinePoints.toFixed(1)}（計入 ${onlineCounted.toFixed(1)}，上限 ${rules.max_online_points}） ${onlinePass ? '✅' : ''}`; html += `</li>`;
          // Physical points check
-         const physicalPoints = results.breakdown.physical_points_derived; const physicalPass = results.passes.physical_min;
-         if (!physicalPass) { html += `<li class="error-reason sub-item">實體積分：${physicalPoints.toFixed(1)} ❌<br>【缺少積分】實體積分需達到 ${rules.min_physical_points} 分，您目前缺少 ${(rules.min_physical_points - physicalPoints).toFixed(1)} 分。(總分 - 網路積分)</li>`; }
+         const physicalPoints = results.breakdown.physical_points_derived; const physicalPass = results.passes.physical_min; if (!physicalPass) { html += `<li class="error-reason sub-item">實體積分：${physicalPoints.toFixed(1)} ❌<br>【缺少積分】實體積分需達到 ${rules.min_physical_points} 分，您目前缺少 ${(rules.min_physical_points - physicalPoints).toFixed(1)} 分。(總分 - 網路積分)</li>`; }
          // 2. Total Points (Final Check)
-         const totalCounted = results.total_counted; const totalPass = results.passes.total;
-         html += `<li>📊 **加總後總積分**（計入上限後）：${totalCounted.toFixed(1)} ${totalPass ? '✅' : '❌'}`; if (!totalPass) { html += `<br><span class="error-reason">【缺少積分】總積分需達到 ${rules.min_total_points} 分，您目前缺少 ${(rules.min_total_points - totalCounted).toFixed(1)} 分。</span>`; } html += `</li>`;
+         const totalCounted = results.total_counted; const totalPass = results.passes.total; html += `<li>📊 **加總後總積分**（計入上限後）：${totalCounted.toFixed(1)} ${totalPass ? '✅' : '❌'}`; if (!totalPass) { html += `<br><span class="error-reason">【缺少積分】總積分需達到 ${rules.min_total_points} 分，您目前缺少 ${(rules.min_total_points - totalCounted).toFixed(1)} 分。</span>`; } html += `</li>`;
 
          html += '</ol>';
          detailsDiv.innerHTML = html;
@@ -444,16 +374,6 @@
          link.addEventListener('click', (e) => {
            navLinks.forEach(nav => nav.classList.remove('active'));
            link.classList.add('active');
-           // Optional: Add smooth scroll adjustment if needed
-           const targetId = link.getAttribute('href');
-           if (targetId.startsWith('#')) {
-                const targetElement = document.querySelector(targetId);
-                if (targetElement) {
-                   // e.preventDefault(); // Uncomment if default jump is undesirable
-                   // const offsetTop = targetElement.offsetTop - 70; // Adjust for sticky nav height
-                   // window.scrollTo({ top: offsetTop, behavior: 'smooth' });
-                }
-           }
          });
        });
        console.log("DOM Loaded, event listeners attached.");
