@@ -1,3 +1,2 @@
 <svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="100" cy="70" r="40" fill="#FFE082" /> <rect x="70" y="120" width="60" height="40" rx="6" fill="#FFD600" stroke="#000" /> <text x="100" y="180" font-size="14" text-anchor="middle" fill="#3BAA8A">長照查詢積分小幫手</text>
-</svg>
+  <circle cx="100" cy="70" r="40" fill="#FFE082" /> <rect x="70" y="120" width="60" height="40" rx="6" fill="#FFD600" stroke="#000" /> <text x="100" y="180" font-size="14" text-anchor="middle" fill="#2e7d32">長照查詢積分小幫手</text> </svg>
