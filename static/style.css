@@ -1,28 +1,64 @@
 /* 基本樣式 */
 html { scroll-behavior: smooth; }
-body { font-family: 'Noto Sans', 'Noto Sans TC', Arial, sans-serif; padding: 20px; color: #333; background-color: #f8f9fa; line-height: 1.6; }
-header { display: flex; align-items: center; gap: 16px; border-bottom: 2px solid #3BAA8A; padding-bottom: 10px; margin-bottom: 0; background-color: #fff; padding: 15px 20px; border-radius: 8px 8px 0 0; }
+body {
+  font-family: 'Noto Sans', 'Noto Sans TC', Arial, sans-serif;
+  padding: 20px;
+  color: #333;
+  background-color: #f8f9fa; /* (★ 建議) 區塊分隔 */
+  line-height: 1.7; /* (★ 建議) 增加行高 */
+  font-size: 16px; /* (★ 建議) 內文 16px */
+}
+header {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* (★ 建議) 縮小間距 */
+  border-bottom: 2px solid #2e7d32; /* (★ 建議) 統一品牌色 */
+  padding-bottom: 10px;
+  margin-bottom: 0;
+  background-color: #fff;
+  padding: 15px 20px;
+  border-radius: 8px 8px 0 0;
+}
 header img { border-radius: 8px; }
-h1 { margin: 0; font-size: 1.5em;}
-h1 small { display: block; font-size: 0.7em; color: #666; margin-top: 4px; }
+h1 {
+  margin: 0;
+  font-size: 1.75em; /* (★ 建議) 強化字級 (28px) */
+}
+h1 small { display: block; font-size: 0.6em; color: #666; margin-top: 4px; } /*
 main { max-width: 800px; margin: 0 auto 20px auto; }
-section { background: #fff; border: 1px solid #e0e0e0; border-radius: 8px; padding: 25px; margin-bottom: 25px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-h2 { color: #3BAA8A; margin-top: 0; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+section { background: #fff; border: 1px solid #e0e0e0; border-radius: 8px; padding: 25px; margin-bottom: 25px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); } /* (★ 建議) 區塊分隔 */
+h2 {
+  color: #2e7d32; /* (★ 建議) 統一品牌色 */
+  margin-top: 0;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+  font-size: 1.25em; /* (★ 建議) 強化字級 (20px) */
+}
 h4 { color: #555; margin-top: 15px; margin-bottom: 5px; font-size: 1.05em; }
 h4 small { font-weight: normal; color: #777; font-size: 0.9em; }
 
-/* Disclaimer 和 回報連結 樣式 */
+/* Disclaimer (符合"淡色背景警示"建議) */
 .disclaimer-notice { background-color: #fff1f1; color: #dc3545; border: 1px solid #f5c6cb; padding: 10px 20px; margin: 15px auto 15px auto; max-width: 840px; border-radius: 8px; font-size: 1.05em; font-weight: bold; text-align: center; }
 .disclaimer-notice p { margin: 3px 0; }
 .report-link { color: #dc3545; font-weight: bold; text-decoration: underline; font-size: 0.9em; cursor: pointer; }
 .report-link:hover { color: #a71d2a; }
 
-
 /* 導覽列 */
 nav.sub-nav { background: #f4f6f8; padding: 10px 0; border-radius: 8px; margin: 0 auto 20px auto; max-width: 840px; text-align: center; position: sticky; top: 10px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-/* (★ 已修改) 導覽列字體大小 */
-nav.sub-nav a { display: inline-block; padding: 5px 15px; text-decoration: none; color: #3BAA8A; font-weight: bold; border-radius: 5px; font-size: 1.84em; /* Applied font size */ }
-nav.sub-nav a:hover, nav.sub-nav a:focus, nav.sub-nav a.active { background-color: #e0e8e5; outline: none; }
+nav.sub-nav a {
+  display: inline-block;
+  padding: 5px 15px;
+  text-decoration: none;
+  color: #2e7d32; /* (★ 建議) 統一品牌色 */
+  font-weight: bold;
+  border-radius: 5px;
+  font-size: 1.1em; /* (★ 建議) 強化字級 (17.6px) */
+}
+nav.sub-nav a:hover, nav.sub-nav a:focus, nav.sub-nav a.active {
+  background-color: #e8f5e9; /* (★ 建議) 統一輔色 */
+  outline: none;
+}
 
 /* 錨點跳轉偏移 */
 #calculator-section, #qa-section, #links-section { scroll-margin-top: 80px; }
@@ -32,7 +68,12 @@ nav.sub-nav a:hover, nav.sub-nav a:focus, nav.sub-nav a.active { background-colo
 .input-group label { font-weight: bold; color: #444; min-width: 220px; text-align: right;}
 .input-group input[type="text"] { flex-grow: 1; padding: 8px 10px; border: 1px solid #ccc; border-radius: 4px; min-width: 150px; }
 fieldset { border: 1px solid #d0d0d0; border-radius: 8px; padding: 20px; margin-bottom: 20px; background-color: #fdfdfd; }
-legend { font-weight: bold; color: #3BAA8A; padding: 0 10px; font-size: 1.1em; }
+legend {
+  font-weight: bold;
+  color: #2e7d32; /* (★ 建議) 統一品牌色 */
+  padding: 0 10px;
+  font-size: 1.1em;
+}
 .input-item { display: grid; grid-template-columns: 200px 1fr; gap: 10px; align-items: center; margin-bottom: 12px; }
 .input-item label { font-weight: 500; color: #444; text-align: right; }
 .input-item input[type="number"], .input-item input[type="text"] { width: 100%; max-width: 150px; padding: 8px 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
@@ -43,29 +84,48 @@ legend { font-weight: bold; color: #3BAA8A; padding: 0 10px; font-size: 1.1em; }
 .yearly-item label { font-size: 0.95em; }
 
 /* 按鈕 */
-button { background: #3BAA8A; border: none; color: #fff; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-size: 1.05em; transition: background-color 0.2s; }
-button:hover { background: #2f8c70; }
+button {
+  background: #2e7d32; /* (★ 建議) 統一品牌色 */
+  border: none;
+  color: #fff;
+  padding: 10px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1.05em;
+  transition: background-color 0.2s;
+}
+button:hover {
+  background: #266a29; /* (★ 建議) 統一品牌色 */
+}
 
 /* 日期顯示 */
-.date-info { margin-top: 10px; background: #e9f5f2; padding: 15px; border-radius: 4px; border-left: 4px solid #3BAA8A; font-size: 0.95em; color: #333; }
+.date-info {
+  margin-top: 10px;
+  background: #e8f5e9; /* (★ 建議) 統一輔色 */
+  padding: 15px;
+  border-radius: 4px;
+  border-left: 4px solid #2e7d32; /* (★ 建議) 統一品牌色 */
+  font-size: 0.95em;
+  color: #333;
+}
 .date-info p { margin: 8px 0; }
 .date-info hr { border: 0; border-top: 1px dashed #ccc; margin: 10px 0; }
 .date-info strong { color: #d9534f; }
 .date-info small { font-size: 0.9em; color: #555; }
 
 /* 結果顯示 */
-#result-section { border-top: 3px solid #3BAA8A; }
+#result-section { border-top: 3px solid #2e7d32; } /* (★ 建議) 統一品牌色 */
 #result-details ol { list-style-type: none; padding-left: 0; }
 #result-details li { background-color: #f8f9fa; border: 1px solid #e0e0e0; border-radius: 5px; padding: 12px 15px; margin-bottom: 10px; }
-#result-details li strong { color: #3BAA8A; }
+#result-details li strong { color: #2e7d32; } /* (★ 建議) 統一品牌色 */
 .error-reason { color: #dc3545; font-weight: bold; font-size: 0.9em; display: block; margin-top: 5px; }
 .sub-item { background-color: #fff !important; border-left: 3px solid #dc3545; font-size: 0.95em; margin-left: 15px; }
 
 /* Q&A 樣式 */
 .qa-container details { background: #fff; border: 1px solid #eee; border-radius: 8px; margin-bottom: 12px; }
-.qa-container details[open] { border-color: #3BAA8A; }
+.qa-container details[open] { border-color: #2e7d32; } /* (★ 建議) 統一品牌色 */
 .qa-container summary { padding: 16px; font-weight: bold; color: #333; cursor: pointer; font-size: 1.1em; list-style: none; position: relative; padding-left: 30px; }
-.qa-container summary::before { content: '▶'; position: absolute; left: 10px; top: 18px; font-size: 0.8em; color: #3BAA8A; transform: rotate(0deg); transition: transform 0.2s; }
+.qa-container summary::before { content: '▶'; position: absolute; left: 10px; top: 18px; font-size: 0.8em; color: #2e7d32; /* (★ 建議) 統一品牌色 */ transform: rotate(0deg); transition: transform 0.2s; }
 .qa-container details[open] summary::before { transform: rotate(90deg); }
 .qa-container .answer { padding: 0 16px 16px 30px; line-height: 1.7; border-top: 1px dashed #eee; margin: 10px 16px 0 16px; }
 .qa-container .answer p { margin: 8px 0; }
@@ -75,7 +135,11 @@ button:hover { background: #2f8c70; }
 /* 連結區塊 */
 #links-section ul { list-style: none; padding-left: 0; }
 #links-section li { margin-bottom: 10px; }
-#links-section a { color: #007bff; text-decoration: none; }
+#links-section a {
+  color: #2e7d32; /* (★ 建議) 統一品牌色 */
+  text-decoration: none;
+  font-weight: 500;
+}
 #links-section a:hover { text-decoration: underline; }
 #links-section p { margin-top: 15px; }
 #links-section strong { font-weight: bold; }
