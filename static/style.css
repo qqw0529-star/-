@@ -72,26 +72,9 @@ button:disabled { background-color: #9e9e9e; cursor: not-allowed; }
 .error-reason { color: #dc3545; font-weight: bold; font-size: 0.9em; display: block; margin-top: 5px; }
 .sub-item { background-color: #fff !important; border-left: 3px solid #dc3545; font-size: 0.95em; margin-left: 15px; }
 
-/* (★ 優化 3) Q&A 搜尋框 */
-#qa-search {
-    width: 100%;
-    padding: 10px 15px;
-    font-size: 1em;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    box-sizing: border-box; /*
-}
-/* (★ 優化 3) Q&A 分類標題 */
-.qa-category {
-    font-size: 1.1em;
-    font-weight: bold;
-    color: #555;
-    margin-top: 20px;
-    margin-bottom: 10px;
-    padding-bottom: 5px;
-    border-bottom: 2px solid #e8f5e9;
-}
+/* Q&A 搜尋框 */
+#qa-search { width: 100%; padding: 10px 15px; font-size: 1em; border: 1px solid #ccc; border-radius: 8px; margin-bottom: 20px; box-sizing: border-box; }
+.qa-category { font-size: 1.1em; font-weight: bold; color: #555; margin-top: 20px; margin-bottom: 10px; padding-bottom: 5px; border-bottom: 2px solid #e8f5e9; }
 
 /* Q&A 樣式 */
 .qa-container details { background: #fff; border: 1px solid #eee; border-radius: 8px; margin-bottom: 12px; }
@@ -103,15 +86,8 @@ button:disabled { background-color: #9e9e9e; cursor: not-allowed; }
 .qa-container .answer p { margin: 8px 0; }
 .qa-container .answer ul { padding-left: 20px; }
 .qa-container .answer li { margin-bottom: 5px; }
-/* (★ 優化 1) Q&A 重點標示 */
-.qa-container .answer strong {
-    color: #2e7d32; /*
-    font-weight: 900;
-}
-.qa-container .answer strong.negative {
-    color: #d9534f; /* Negative terms can be red */
-}
-
+.qa-container .answer strong { color: #2e7d32; font-weight: 900; }
+.qa-container .answer strong.negative { color: #d9534f; }
 
 /* 連結區塊 */
 #links-section ul { list-style: none; padding-left: 0; }
@@ -121,46 +97,89 @@ button:disabled { background-color: #9e9e9e; cursor: not-allowed; }
 #links-section p { margin-top: 15px; }
 #links-section strong { font-weight: bold; }
 
-/* (★ 優化 4) 回到頂部按鈕 */
-.back-to-top {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background-color: #2e7d32;
-    color: white;
-    padding: 8px 12px;
-    border-radius: 8px;
-    text-decoration: none;
-    font-size: 1.2em;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    opacity: 0.9;
-    transition: opacity 0.3s;
-}
-.back-to-top:hover {
-    opacity: 1;
-}
-.back-to-top .tooltip-text {
-    /* Simple tooltip on hover - optional */
-    visibility: hidden;
-    width: 100px;
-    background-color: #555;
-    color: #fff;
-    text-align: center;
-    border-radius: 6px;
-    padding: 5px 0;
-    position: absolute;
-    z-index: 1;
-    bottom: 125%; /* Position above the button */
-    left: 50%;
-    margin-left: -50px; /* Center it */
-    opacity: 0;
-    transition: opacity 0.3s;
-    font-size: 0.8em;
-}
-.back-to-top:hover .tooltip-text {
-    visibility: visible;
-    opacity: 1;
-}
-
+/* 回到頂部按鈕 */
+.back-to-top { position: fixed; bottom: 20px; right: 20px; background-color: #2e7d32; color: white; padding: 8px 12px; border-radius: 8px; text-decoration: none; font-size: 1.2em; box-shadow: 0 2px 5px rgba(0,0,0,0.2); opacity: 0.9; transition: opacity 0.3s; }
+.back-to-top:hover { opacity: 1; }
+.back-to-top .tooltip-text { visibility: hidden; width: 100px; background-color: #555; color: #fff; text-align: center; border-radius: 6px; padding: 5px 0; position: absolute; z-index: 1; bottom: 125%; left: 50%; margin-left: -50px; opacity: 0; transition: opacity 0.3s; font-size: 0.8em; }
+.back-to-top:hover .tooltip-text { visibility: visible; opacity: 1; }
 
 pre { background: #f4f6f8; padding: 12px; border-radius: 8px; border: 1px solid #ddd; overflow-x: auto; white-space: pre-wrap; word-wrap: break-word; font-size: 0.9em; margin-top: 20px; }
+
+
+/* (★ 新增) RWD - 手機版響應式設計 */
+@media (max-width: 768px) {
+    body {
+        padding: 10px; /* 縮小頁邊距 */
+        font-size: 15px;
+    }
+
+    /* 讓區塊填滿 */
+    header, .disclaimer-notice, nav.sub-nav, main {
+        max-width: 100%;
+    }
+    
+    /* 縮小標題字體 */
+    h1 {
+        font-size: 1.5em;
+    }
+
+    /* 縮小導覽列字體 */
+    nav.sub-nav a {
+        font-size: 1.1em; 
+        padding: 5px 8px;
+    }
+    
+    /* 取消導覽列黏貼，避免佔用手機寶貴空間 */
+    nav.sub-nav {
+        position: static; 
+        box-shadow: none;
+    }
+
+    /* 錨點偏移也要取消 (因為 nav 不再 sticky) */
+    #calculator-section, #qa-section, #links-section {
+        scroll-margin-top: 10px; 
+    }
+
+    /* 縮小區塊內邊距 */
+    section {
+        padding: 15px;
+    }
+
+    /* --- (★ 關鍵) 以下是表單修正 --- */
+
+    /* 修正日期輸入欄位 */
+    .input-group {
+        gap: 8px;
+    }
+    .input-group label {
+        min-width: 100%; /* 標籤佔滿整行 */
+        text-align: left; /* 靠左 */
+        margin-bottom: -5px;
+    }
+    .input-group input[type="text"] {
+        width: 100%; /* 輸入框佔滿 */
+        flex-grow: 0;
+    }
+    .input-group .hint {
+        margin-left: 0; /* 移除提示的縮排 */
+        width: 100%;
+        text-align: left;
+    }
+
+    /* 修正積分輸入欄位 (改為單欄) */
+    .input-item {
+        grid-template-columns: 1fr; /* (★ 關鍵) 改為單欄 */
+        gap: 5px;
+    }
+    .input-item label {
+        text-align: left; /* 標籤靠左 */
+        padding-right: 0;
+    }
+    .input-item input[type="number"],
+    .input-item input[type="text"] {
+        max-width: 100%; /* 讓輸入框填滿 */
+    }
+    .input-item small {
+        grid-column: 1 / -1; /* 說明文字佔滿整行 */
+    }
+}
